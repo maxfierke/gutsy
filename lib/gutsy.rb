@@ -25,9 +25,10 @@ module Gutsy
 
       begin
         generator.generate!
-      rescue Exception => e
+      rescue => e
         puts "FAIL"
-        puts e
+        puts e.message
+        puts e.backtrace.join("\n")
         exit 1
       end
 
