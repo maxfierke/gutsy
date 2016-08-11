@@ -1,0 +1,11 @@
+module <%= gem_name_pascal %>
+  module V1
+    class <%= resource_name.camelize %>
+      include Adapter
+
+      def resource_name
+        "<%= resource_name.underscore %>"
+      end
+    end
+  end
+end

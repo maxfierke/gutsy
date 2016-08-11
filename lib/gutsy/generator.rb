@@ -37,6 +37,19 @@ module Gutsy
         end
       end
 
+      class ResourceState
+        attr_reader :resource_name, :gem_name_pascal
+
+        def initialize(resource_name, gem_name_pascal)
+          @resource_name = resource_name
+          @gem_name_pascal = gem_name_pascal
+        end
+
+        def twine
+          binding
+        end
+      end
+
       attr_reader :app_name
 
       def initialize(app_name, schema_path, output_path)
@@ -128,6 +141,12 @@ module Gutsy
         ].each do |file|
           copy_file "lib/app_client/#{file}",
                     as: "lib/#{gem_name_snake}/#{file}"
+        end
+
+        state.resources.each do |key, resource|
+          copy_file "lib/app_client/v1/resource.rb",
+                    as: "lib/#{gem_name_snake}/v1/#{key.to_s.underscore}.rb",
+                    binding: ResourceState.new(key.to_s, gem_name_pascal).twine
         end
       end
 
