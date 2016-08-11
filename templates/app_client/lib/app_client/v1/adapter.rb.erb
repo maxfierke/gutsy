@@ -1,0 +1,66 @@
+module <%= gem_name_pascal %>
+  module V1
+    # Empty namespace, needed for heroics-generated HTTP client
+    module Adapters; end
+
+    module Adapter
+      def initialize(client=nil, access_token: nil, api_key: nil, api_secret: nil, options: {})
+        @client = if client
+          client
+        else
+          config          = <%= gem_name_pascal %>.configuration
+          access_token  ||= config.access_token
+          api_key       ||= config.api_key
+          api_secret    ||= config.api_secret
+          options         = config.options.merge!(options)
+
+          # Workaround issue with some TLS setups (haproxy)
+          # Prevents :443 being added to hostname for TLS
+          Excon.defaults[:omit_default_port] = true
+
+          if access_token
+            config.adapter_factory.connect_oauth(access_token, options)
+          elsif api_key && api_secret
+            config.adapter_factory.connect(api_secret, options.merge!({
+              user: config.api_key
+            }))
+          else
+            raise 'access_token or API key & secret are required to connect to <%= app_name.downcase %> API'
+          end
+        end
+      end
+
+      def method_missing(name, *args)
+        if resource_caller.respond_to?(name)
+          begin
+            response = resource_caller.send(name, *args)
+            response[:ok?] = true
+          rescue Excon::Errors::UnprocessableEntity => e
+            response = MultiJson.load(e.response.body)
+            response[:ok?] = false
+          end
+
+          RecursiveOpenStruct.new(response, recurse_over_arrays: true)
+        else
+          raise NoMethodError.new("'#{resource_name}' API adapter '#{to_s}' does not respond to ##{name}")
+        end
+      end
+
+      def resource_name
+        raise "Please define a name for this resource"
+      end
+
+      def adapter_class
+        client.class
+      end
+
+      protected
+
+      attr_accessor :client
+
+      def resource_caller
+        client.send(resource_name)
+      end
+    end
+  end
+end

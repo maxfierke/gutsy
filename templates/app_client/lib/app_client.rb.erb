@@ -1,0 +1,58 @@
+require 'multi_json'
+require 'recursive-open-struct'
+require '<%= gem_name_snake %>/v1/adapter'
+
+Dir.glob(File.join(File.dirname(__FILE__), "<%= gem_name_snake %>", '**', '*.rb')).each do |file|
+  require file
+end
+
+module <%= gem_name_pascal %>
+  class << self
+    attr_accessor :configuration
+  end
+
+  # Configure <%= gem_name_pascal %> someplace sensible,
+  # like config/initializers/<%= gem_name_snake %>.rb
+  #
+  # @example
+  #   <%= gem_name_pascal %>.configure do |config|
+  #     config.base_url = 'http://<%= app_name.downcase %>.dev'
+  #     # Specify credentials for OAuth browser-flow
+  #     config.access_token = 'randomness'
+  #     # or server-side flow
+  #     config.api_key    = 'i-am-app'
+  #     config.api_secret = 'am-secret-dont-tell'
+  #   end
+  def self.configure
+    self.configuration ||= Configuration.new
+    yield(configuration) if block_given?
+  end
+
+  class Configuration
+    attr_accessor :access_token, :api_key, :api_secret,
+                  :base_url, :options,
+                  :adapter_factory, :api_version
+
+    def options
+      @options ||= {}
+    end
+
+    def api_version
+      @api_version ||= 'v1'
+    end
+
+    def api_version=(version)
+      options[:url] = "#{base_url}/api/#{version}"
+      @api_version = version
+    end
+
+    def adapter_factory
+      @adapter_factory ||= <%= gem_name_pascal %>.const_get("#{api_version.upcase}")::Adapters::Http
+    end
+
+    def base_url=(url)
+      options[:url] = "#{url}/api/#{api_version}"
+      @base_url = url
+    end
+  end
+end
