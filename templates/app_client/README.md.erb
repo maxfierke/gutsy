@@ -1,6 +1,6 @@
-# <%= app_name.capitalize %> Ruby Client
+# <%= app_name %> Ruby Client
 
-<%= app_name.capitalize %> is an application that does things. This gem provides a wrapper around an HTTP Client generated from <%= app_name.capitalize %>'s JSON Schema using [heroics](https://github.com/interagent/heroics).
+<%= app_name %> is an application that does things. This gem provides a wrapper around an HTTP Client generated from <%= app_name %>'s JSON Schema using [heroics](https://github.com/interagent/heroics).
 
 
 ## Usage
@@ -17,7 +17,7 @@ gem '<%= gem_name_snake %>', git: 'git@github.com:USER/REPO.git', tag: 'VERSION'
 
   ```ruby
   <%= gem_name_pascal %>.configure do |config|
-    config.base_url   = "http://<%= app_name %>.dev"
+    config.base_url   = "http://<%= app_name.downcase %>.dev"
     config.api_key    = "i-am-api-user"
     config.api_secret = "very-secret-sssshhh"
     # or OAuth access token

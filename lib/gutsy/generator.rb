@@ -56,10 +56,30 @@ module Gutsy
       end
 
       def generate!
+        create_output_dir
+
+        validate_schema!
+
+        scaffold_gem
+
+        generate_heroics_client
+
+        open_exe = find_executable("open") || find_executable("xdg-open")
+        `#{open_exe} #{output_path}`
+      end
+
+      private
+
+      attr_reader :state, :schema_path, :output_path
+      def_delegators :state, :app_name, :gem_name_snake, :gem_name_pascal
+
+      def create_output_dir
         print "Creating #{output_path}..."
         Dir.mkdir(output_path, 0755) unless Dir.exist?(output_path)
         puts "OK"
+      end
 
+      def validate_schema!
         print "Validating schema against draft-04 JSON Schema..."
         draft04_uri = URI.parse("http://json-schema.org/draft-04/hyper-schema")
         draft04 = JsonSchema.parse!(JSON.parse(draft04_uri.read))
@@ -71,13 +91,13 @@ module Gutsy
 
         draft04.validate!(schema)
         puts "OK"
+      end
 
+      def scaffold_gem
         print "Creating gem directory structure..."
-        template_dirs_in.each do |dir|
+        template_dirs.each do |dir|
           dir = dir.gsub('app_client', gem_name_snake)
-
           dir_path = File.join(output_path, dir)
-
           Dir.mkdir(dir_path, 0755) unless Dir.exist?(dir_path)
         end
         puts "OK"
@@ -102,7 +122,9 @@ module Gutsy
           copy_file "lib/app_client/#{file}",
                     as: "lib/#{gem_name_snake}/#{file}"
         end
+      end
 
+      def generate_heroics_client
         print "Generating Heroics client for JSON Schema..."
         unless system "heroics-generate \
           #{gem_name_pascal}::V1::Adapters::Http \
@@ -113,17 +135,7 @@ module Gutsy
           puts "Please see stacktrace or heroics errors"
         end
         puts "OK"
-
-        open_exe = find_executable("open") || find_executable("xdg-open")
-
-        `#{open_exe} #{output_path}`
       end
-
-      private
-
-      attr_reader :state, :schema_path, :output_path
-
-      def_delegators :state, :app_name, :gem_name_snake, :gem_name_pascal
 
       # Derived from Methadone::Cli (https://github.com/davetron5000/methadone/blob/935444f9deb81100a33ec3234effbeb65acbc080/lib/methadone/cli.rb)
       def copy_file(relative_path,options = {})
@@ -152,7 +164,7 @@ module Gutsy
         @template_dir ||= File.join(File.dirname(__FILE__), '..', '..', 'templates', 'app_client')
       end
 
-      def template_dirs_in
+      def template_dirs
         Dir["#{template_dir}/**/*"].
           select { |x| File.directory? x }.
           map { |dir| dir.gsub(/^#{template_dir}\//,'') }
