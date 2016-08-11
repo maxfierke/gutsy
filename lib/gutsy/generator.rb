@@ -5,6 +5,7 @@ module Gutsy
 
       class State
         attr_reader :app_name
+        attr_accessor :resources
 
         def initialize(app_name, resources=[])
           @app_name = app_name
@@ -31,10 +32,6 @@ module Gutsy
           @copyright_owner ||= "YOUR_NAME_HERE"
         end
 
-        def resources
-          @resources ||= []
-        end
-
         def twine
           binding
         end
@@ -51,7 +48,9 @@ module Gutsy
       def generate!
         create_output_dir
 
-        validate_schema!
+        schema = load_and_validate_schema!
+
+        state.resources = map_schema_to_resources(schema)
 
         scaffold_gem
 
@@ -64,6 +63,7 @@ module Gutsy
       private
 
       attr_reader :state, :schema_path, :output_path
+      attr_accessor :schema
       def_delegators :state, :app_name, :gem_name_snake, :gem_name_pascal
 
       def create_output_dir
@@ -72,7 +72,7 @@ module Gutsy
         puts "OK"
       end
 
-      def validate_schema!
+      def load_and_validate_schema!
         print "Validating schema against draft-04 JSON Schema..."
         draft04_uri = URI.parse("http://json-schema.org/draft-04/hyper-schema")
         draft04 = JsonSchema.parse!(JSON.parse(draft04_uri.read))
@@ -84,6 +84,20 @@ module Gutsy
 
         draft04.validate!(schema)
         puts "OK"
+
+        schema
+      end
+
+      def map_schema_to_resources(schema)
+        resources = Hash[schema.definitions.map do |key, resource|
+          links = Hash[resource.links.map do |link|
+            link.schema.expand_references! if link.schema
+            properties = link.schema.try(:properties) || {}
+            [link.title.downcase.to_sym, OpenStruct.new(properties: properties)]
+          end]
+          [key.to_sym, OpenStruct.new(title: key.camelize, links: links)]
+        end]
+        resources
       end
 
       def scaffold_gem
@@ -135,7 +149,7 @@ module Gutsy
         relative_path = File.join(relative_path.split(/\//))
 
         template_path = File.join(template_dir, "#{relative_path}.erb")
-        template = ERB.new(File.read(template_path))
+        template = ERB.new(File.read(template_path), nil, '-')
 
         output_relative_path ||= options[:as] || relative_path
 
