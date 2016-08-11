@@ -132,6 +132,9 @@ module Gutsy
           copy_file file
         end
 
+        copy_file "app_client.gemspec",
+                  as: "#{gem_name_snake}.gemspec"
+
         copy_file "lib/app_client.rb",
                   as: "lib/#{gem_name_snake}.rb"
 
