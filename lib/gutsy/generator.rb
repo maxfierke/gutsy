@@ -11,12 +11,16 @@ module Gutsy
           @resources = resources
         end
 
+        def gem_name
+          @gem_name_snake ||= "#{app_name.underscore}_client"
+        end
+
         def gem_name_snake
-          @gem_name_snake ||= "#{underscore(app_name)}_client"
+          gem_name
         end
 
         def gem_name_pascal
-          @gem_name_pascal || app_name.capitalize
+          @gem_name_pascal ||= gem_name.camelize(:upper)
         end
 
         def copyright_year
@@ -33,17 +37,6 @@ module Gutsy
 
         def twine
           binding
-        end
-
-        # From ActiveSupport 4.2.1
-        def underscore(camel_cased_word)
-          return camel_cased_word unless camel_cased_word =~ /[A-Z-]|::/
-          word = camel_cased_word.to_s.gsub('::'.freeze, '/'.freeze)
-          word.gsub!(/([A-Z\d]+)([A-Z][a-z])/, '\1_\2'.freeze)
-          word.gsub!(/([a-z\d])([A-Z])/, '\1_\2'.freeze)
-          word.tr!("-".freeze, "_".freeze)
-          word.downcase!
-          word
         end
       end
 
