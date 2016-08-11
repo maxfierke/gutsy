@@ -5,7 +5,6 @@ require 'erb'
 require 'json_schema'
 require 'mkmf'
 require 'open-uri'
-require 'pry'
 require 'gutsy/version'
 require 'gutsy/cli'
 
