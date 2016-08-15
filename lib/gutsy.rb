@@ -56,7 +56,7 @@ TEXT
 Usage: gutsy [command] [options]
 
 DESCRIPTION
-    Generates wrappers around heroics-generated API clients
+    Generates gem wrappers around heroics-generated API clients
     built with JSON Schema. (Enough layers of generation for ya?)
 
 COMMANDS

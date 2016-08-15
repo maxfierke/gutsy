@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Max Fierke"]
   spec.email         = ["max.fierke@iorahealth.com"]
 
-  spec.summary       = "Generates heroics-powered API client wrappers from JSON Schema"
+  spec.summary       = "Generates heroics-powered API client gem wrappers from JSON Schema"
   spec.description   = spec.summary
   spec.homepage      = "https://github.com/IoraHealth/gutsy"
   spec.license       = "MIT"
