@@ -1,5 +1,7 @@
 # Gutsy
 
+[![Gem Version](https://badge.fury.io/rb/gutsy.svg)](https://badge.fury.io/rb/gutsy)
+
 <center>
 <pre>
                                                                                 
