@@ -69,8 +69,7 @@ module Gutsy
 
         generate_heroics_client
 
-        open_exe = find_executable("open") || find_executable("xdg-open")
-        `#{open_exe} #{output_path}`
+        puts "Generated client gem can be found in... #{output_path}"
       end
 
       private
