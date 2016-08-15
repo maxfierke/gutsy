@@ -6,8 +6,8 @@ require 'gutsy/version'
 Gem::Specification.new do |spec|
   spec.name          = "gutsy"
   spec.version       = Gutsy::VERSION
-  spec.authors       = ["Max Fierke"]
-  spec.email         = ["max.fierke@iorahealth.com"]
+  spec.authors       = ["Iora Health"]
+  spec.email         = ["rubygems@iorahealth.com"]
 
   spec.summary       = "Generates heroics-powered API client gem wrappers from JSON Schema"
   spec.description   = spec.summary
