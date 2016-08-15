@@ -16,6 +16,23 @@ module Gutsy
 
     case command
     when "generate"
+      unless args.length == 4
+        puts <<-TEXT
+Error: Not enough arguments for command 'generate'
+
+Usage: gutsy generate [app_name] [schema_path] [output_path]
+
+DESCRIPTION
+    Generates a gem scaffold and resource API clients on top of a heroics-generated client.
+
+ARGUMENTS
+    [app_name]    - CamelCased name of your application
+    [schema_path] - Path to your JSON Schema file
+    [output_path] - Path to output generated API client gem.
+                    (Will be created if it doesn't exist)
+TEXT
+        exit 1
+      end
       app_name = args[1]
       schema_path = File.expand_path(args[2])
       output_path = File.expand_path(args[3])
