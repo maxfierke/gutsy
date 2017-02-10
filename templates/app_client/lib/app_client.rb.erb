@@ -1,6 +1,8 @@
 require 'multi_json'
 require 'recursive-open-struct'
-require '<%= gem_name_snake %>/v1/adapter'
+<% api_versions.each do |version| %>
+require '<%= gem_name_snake %>/<%= version %>/adapter'
+<% end %>
 
 Dir.glob(File.join(File.dirname(__FILE__), "<%= gem_name_snake %>", '**', '*.rb')).each do |file|
   require file
@@ -38,7 +40,7 @@ module <%= gem_name_pascal %>
     end
 
     def api_version
-      @api_version ||= 'v1'
+      @api_version ||= '<%= api_versions.first %>'
     end
 
     def api_version=(version)

@@ -1,5 +1,5 @@
 module <%= gem_name_pascal %>
-  module V1
+  module <%= module_name %>
     # Empty namespace, needed for heroics-generated HTTP client
     module Adapters; end
 
@@ -25,7 +25,7 @@ module <%= gem_name_pascal %>
               user: config.api_key
             }))
           else
-            raise 'access_token or API key & secret are required to connect to <%= app_name.downcase %> API'
+            raise "access_token or API key & secret are required to connect to <%= app_name.downcase %> <%= module_name %> API"
           end
         end
       end

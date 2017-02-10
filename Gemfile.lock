@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    gutsy (0.1.0)
+    gutsy (0.2.0)
       activesupport (>= 3.2)
       heroics (~> 0.0.17)
       json_schema (~> 0.13)
@@ -9,15 +9,15 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (4.1.11)
-      i18n (~> 0.6, >= 0.6.9)
-      json (~> 1.7, >= 1.7.7)
+    activesupport (5.0.0.1)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (~> 0.7)
       minitest (~> 5.1)
-      thread_safe (~> 0.1)
       tzinfo (~> 1.1)
+    concurrent-ruby (1.0.2)
     diff-lcs (1.2.5)
     erubis (2.7.0)
-    excon (0.51.0)
+    excon (0.52.0)
     heroics (0.0.17)
       erubis (~> 2.0)
       excon
@@ -25,9 +25,8 @@ GEM
       multi_json (>= 1.9.2)
       netrc
     i18n (0.7.0)
-    json (1.8.3)
-    json_schema (0.13.0)
-    minitest (5.8.3)
+    json_schema (0.13.3)
+    minitest (5.9.0)
     moneta (0.8.0)
     multi_json (1.12.1)
     netrc (0.11.0)

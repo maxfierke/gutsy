@@ -1,59 +1,13 @@
+require 'gutsy/generator/gem_state'
+require 'gutsy/generator/resource_state'
+
 module Gutsy
   module Cli
     class Generator
       extend Forwardable
 
-      class State
-        attr_reader :app_name
-        attr_accessor :resources
-
-        def initialize(app_name, resources=[])
-          @app_name = app_name
-          @resources = resources
-        end
-
-        def gem_name
-          @gem_name_snake ||= "#{app_name.underscore}_client"
-        end
-
-        def gem_name_snake
-          gem_name
-        end
-
-        def gem_name_pascal
-          @gem_name_pascal ||= gem_name.camelize(:upper)
-        end
-
-        def copyright_year
-          @copyright_year ||= Time.now.year
-        end
-
-        def copyright_owner
-          @copyright_owner ||= "YOUR_NAME_HERE"
-        end
-
-        def twine
-          binding
-        end
-      end
-
-      class ResourceState
-        attr_reader :resource_name, :gem_name_pascal
-
-        def initialize(resource_name, gem_name_pascal)
-          @resource_name = resource_name
-          @gem_name_pascal = gem_name_pascal
-        end
-
-        def twine
-          binding
-        end
-      end
-
-      attr_reader :app_name
-
-      def initialize(app_name, schema_path, output_path)
-        @state = State.new(app_name)
+      def initialize(app_name, schema_path, output_path, api_versions)
+        @state = Gutsy::Generator::State.new(app_name, api_versions)
         @schema_path = schema_path
         @output_path = output_path
       end
@@ -65,9 +19,7 @@ module Gutsy
 
         state.resources = map_schema_to_resources(schema)
 
-        scaffold_gem
-
-        generate_heroics_client
+        build_gem
 
         puts "Generated client gem can be found in... #{output_path}"
       end
@@ -76,7 +28,7 @@ module Gutsy
 
       attr_reader :state, :schema_path, :output_path
       attr_accessor :schema
-      def_delegators :state, :app_name, :gem_name_snake, :gem_name_pascal
+      def_delegators :state, :app_name, :gem_name_snake, :gem_name_pascal, :api_versions
 
       def create_output_dir
         print "Creating #{output_path}..."
@@ -112,15 +64,35 @@ module Gutsy
         resources
       end
 
-      def scaffold_gem
+      def build_gem
         print "Creating gem directory structure..."
-        template_dirs.each do |dir|
+        build_gem_directory_tree
+        puts "OK"
+
+        print "Creating gem metadata..."
+        generate_gem_metadata
+        puts "OK"
+
+        print "Generating API clients for each API version..."
+        generate_api_clients
+        puts "OK"
+      end
+
+      def build_gem_directory_tree
+        template_dirs.flat_map do |dir|
           dir = dir.gsub('app_client', gem_name_snake)
+          if dir =~ /api_version/
+            state.api_versions.map { |v| dir.gsub('api_version', v) }
+          else
+            [dir]
+          end
+        end.each do |dir|
           dir_path = File.join(output_path, dir)
           Dir.mkdir(dir_path, 0755) unless Dir.exist?(dir_path)
         end
-        puts "OK"
+      end
 
+      def generate_gem_metadata
         [
           ".gitignore",
           "Gemfile",
@@ -131,34 +103,36 @@ module Gutsy
           copy_file file
         end
 
-        copy_file "app_client.gemspec",
-                  as: "#{gem_name_snake}.gemspec"
+        copy_file "app_client.gemspec", as: "#{gem_name_snake}.gemspec"
+        copy_file "lib/app_client.rb", as: "lib/#{gem_name_snake}.rb"
+        copy_file "lib/app_client/version.rb", as: "lib/#{gem_name_snake}/version.rb"
+      end
 
-        copy_file "lib/app_client.rb",
-                  as: "lib/#{gem_name_snake}.rb"
+      def generate_api_clients
+        api_versions.each do |api_version|
+          module_name = api_version.upcase
 
-        [
-          "version.rb",
-          "v1/adapter.rb"
-        ].each do |file|
-          copy_file "lib/app_client/#{file}",
-                    as: "lib/#{gem_name_snake}/#{file}"
-        end
+          copy_file "lib/app_client/api_version/adapter.rb",
+                    as: "lib/#{gem_name_snake}/#{api_version}/adapter.rb",
+                    binding: Gutsy::Generator::ResourceState.new(nil, module_name, state).twine
 
-        state.resources.each do |key, resource|
-          copy_file "lib/app_client/v1/resource.rb",
-                    as: "lib/#{gem_name_snake}/v1/#{key.to_s.underscore}.rb",
-                    binding: ResourceState.new(key.to_s, gem_name_pascal).twine
+          state.resources.each do |key, resource|
+            copy_file "lib/app_client/api_version/resource.rb",
+                      as: "lib/#{gem_name_snake}/#{api_version}/#{key.to_s.underscore}.rb",
+                      binding: Gutsy::Generator::ResourceState.new(key.to_s, module_name, state).twine
+          end
+
+          generate_heroics_client(api_version)
         end
       end
 
-      def generate_heroics_client
-        print "Generating Heroics client for JSON Schema..."
+      def generate_heroics_client(api_version)
+        print "Generating Heroics client for #{api_version} JSON Schema..."
         unless system "heroics-generate \
-          #{gem_name_pascal}::V1::Adapters::Http \
+          #{gem_name_pascal}::#{api_version.upcase}::Adapters::Http \
           #{schema_path} \
-          http://#{app_name.downcase}/api/v1 > \
-          #{output_path}/lib/#{gem_name_snake}/v1/adapters/http.rb"
+          http://#{app_name.downcase}/api/#{api_version.downcase} > \
+          #{output_path}/lib/#{gem_name_snake}/#{api_version.downcase}/adapters/http.rb"
           puts "FAIL"
           puts "Please see stacktrace or heroics errors"
         end
