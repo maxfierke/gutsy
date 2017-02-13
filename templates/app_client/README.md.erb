@@ -17,11 +17,11 @@ gem '<%= gem_name_snake %>' #, git: 'git@github.com:USER/REPO.git', tag: 'v0.1.0
 
   ```ruby
   <%= gem_name_pascal %>.configure do |config|
-    config.base_url   = "http://<%= app_name.downcase %>.dev"
+    config.base_url   = "<%=base_url %>"
     config.api_key    = "i-am-api-user"
     config.api_secret = "very-secret-sssshhh"
     # or OAuth access token
-    # config.access_token = "SHA-goodness"
+    # config.access_token = ENV['COOL_API_ACCESS_TOKEN']
   end
   ```
 

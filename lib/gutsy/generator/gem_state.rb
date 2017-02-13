@@ -1,12 +1,13 @@
 module Gutsy
   module Generator
-    class State
-      attr_reader :app_name, :api_versions
+    class GemState
+      attr_reader :app_name, :base_url, :api_versions
       attr_accessor :resources
 
-      def initialize(app_name, api_versions)
-        @app_name = app_name
-        @api_versions = api_versions
+      def initialize(app_config)
+        @app_name = app_config[:name]
+        @api_versions = app_config[:versions]
+        @base_url = app_config[:base_url]
         @resources = []
       end
 

@@ -1,8 +1,8 @@
 require 'multi_json'
 require 'recursive-open-struct'
-<% api_versions.each do |version| %>
-require '<%= gem_name_snake %>/<%= version %>/adapter'
-<% end %>
+<% api_versions.each do |version| -%>
+require '<%= gem_name_snake %>/<%= version[:name] %>/adapter'
+<% end -%>
 
 Dir.glob(File.join(File.dirname(__FILE__), "<%= gem_name_snake %>", '**', '*.rb')).each do |file|
   require file
@@ -18,7 +18,7 @@ module <%= gem_name_pascal %>
   #
   # @example
   #   <%= gem_name_pascal %>.configure do |config|
-  #     config.base_url = 'http://<%= app_name.downcase %>.dev'
+  #     config.base_url = '<%= base_url %>'
   #     # Specify credentials for OAuth browser-flow
   #     config.access_token = 'randomness'
   #     # or server-side flow
@@ -40,7 +40,7 @@ module <%= gem_name_pascal %>
     end
 
     def api_version
-      @api_version ||= '<%= api_versions.first %>'
+      @api_version ||= '<%= api_versions.first[:name] %>'
     end
 
     def api_version=(version)

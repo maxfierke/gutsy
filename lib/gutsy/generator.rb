@@ -6,28 +6,22 @@ module Gutsy
     class Generator
       extend Forwardable
 
-      def initialize(app_name, schema_path, output_path, api_versions)
-        @state = Gutsy::Generator::State.new(app_name, api_versions)
-        @schema_path = schema_path
+      def initialize(app_config, output_path)
+        @state = Gutsy::Generator::GemState.new(app_config)
         @output_path = output_path
       end
 
       def generate!
         create_output_dir
 
-        schema = load_and_validate_schema!
-
-        state.resources = map_schema_to_resources(schema)
-
         build_gem
 
-        puts "Generated client gem can be found in... #{output_path}"
+        puts "Generated client gem(s) can be found in... #{output_path}"
       end
 
       private
 
-      attr_reader :state, :schema_path, :output_path
-      attr_accessor :schema
+      attr_reader :state, :output_path
       def_delegators :state, :app_name, :gem_name_snake, :gem_name_pascal, :api_versions
 
       def create_output_dir
@@ -36,32 +30,12 @@ module Gutsy
         puts "OK"
       end
 
-      def load_and_validate_schema!
+      def load_and_validate_schema!(schema_path)
         print "Validating schema against draft-04 JSON Schema..."
-        draft04_uri = URI.parse("http://json-schema.org/draft-04/hyper-schema")
-        draft04 = JsonSchema.parse!(JSON.parse(draft04_uri.read))
-
-        schema_json = JSON.parse(File.read(schema_path))
-
-        schema = JsonSchema.parse!(schema_json)
-        schema.expand_references!
-
-        draft04.validate!(schema)
+        schema = Gutsy::Schema.load_from_file!(schema_path)
         puts "OK"
 
         schema
-      end
-
-      def map_schema_to_resources(schema)
-        resources = Hash[schema.definitions.map do |key, resource|
-          links = Hash[resource.links.map do |link|
-            link.schema.expand_references! if link.schema
-            properties = link.schema.try(:properties) || {}
-            [link.title.downcase.to_sym, OpenStruct.new(properties: properties)]
-          end]
-          [key.to_sym, OpenStruct.new(title: key.camelize, links: links)]
-        end]
-        resources
       end
 
       def build_gem
@@ -82,7 +56,7 @@ module Gutsy
         template_dirs.flat_map do |dir|
           dir = dir.gsub('app_client', gem_name_snake)
           if dir =~ /api_version/
-            state.api_versions.map { |v| dir.gsub('api_version', v) }
+            state.api_versions.map { |v| dir.gsub('api_version', v[:name]) }
           else
             [dir]
           end
@@ -110,15 +84,19 @@ module Gutsy
 
       def generate_api_clients
         api_versions.each do |api_version|
-          module_name = api_version.upcase
+          version_name = api_version[:name]
+          schema_path = api_version[:schema_path]
+          module_name = version_name.upcase
+
+          schema = load_and_validate_schema!(schema_path)
 
           copy_file "lib/app_client/api_version/adapter.rb",
-                    as: "lib/#{gem_name_snake}/#{api_version}/adapter.rb",
+                    as: "lib/#{gem_name_snake}/#{version_name}/adapter.rb",
                     binding: Gutsy::Generator::ResourceState.new(nil, module_name, state).twine
 
-          state.resources.each do |key, resource|
+          schema.resources.each do |key, resource|
             copy_file "lib/app_client/api_version/resource.rb",
-                      as: "lib/#{gem_name_snake}/#{api_version}/#{key.to_s.underscore}.rb",
+                      as: "lib/#{gem_name_snake}/#{version_name}/#{key.to_s.underscore}.rb",
                       binding: Gutsy::Generator::ResourceState.new(key.to_s, module_name, state).twine
           end
 
@@ -127,12 +105,13 @@ module Gutsy
       end
 
       def generate_heroics_client(api_version)
-        print "Generating Heroics client for #{api_version} JSON Schema..."
+        version_name = api_version[:name]
+        print "Generating Heroics client for #{version_name} JSON Schema..."
         unless system "heroics-generate \
-          #{gem_name_pascal}::#{api_version.upcase}::Adapters::Http \
-          #{schema_path} \
-          http://#{app_name.downcase}/api/#{api_version.downcase} > \
-          #{output_path}/lib/#{gem_name_snake}/#{api_version.downcase}/adapters/http.rb"
+          #{gem_name_pascal}::#{version_name.upcase}::Adapters::Http \
+          #{api_version[:schema_path]} \
+          http://#{app_name.downcase}/api/#{version_name.downcase} > \
+          #{output_path}/lib/#{gem_name_snake}/#{version_name.downcase}/adapters/http.rb"
           puts "FAIL"
           puts "Please see stacktrace or heroics errors"
         end
