@@ -10,10 +10,6 @@ module Gutsy
       @config = config
     end
 
-    def [](application_key)
-      @config[application_key]
-    end
-
     def apps
       @config.values
     end

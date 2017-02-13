@@ -3,13 +3,12 @@ module Gutsy
     class ResourceState
       extend Forwardable
 
-      attr_reader :resource_name, :module_name
-      def_delegators :gem_state, :gem_name_pascal, :app_name
+      attr_reader :resource_name
+      def_delegators :version_state, :gem_name_pascal, :app_name, :module_name
 
-      def initialize(resource_name, module_name, gem_state)
+      def initialize(resource_name, version_state)
         @resource_name = resource_name
-        @module_name = module_name
-        @gem_state = gem_state
+        @version_state = version_state
       end
 
       def twine
@@ -18,7 +17,7 @@ module Gutsy
 
       private
 
-      attr_reader :gem_state
+      attr_reader :version_state
     end
   end
 end

@@ -1,14 +1,18 @@
 module Gutsy
   module Generator
     class GemState
-      attr_reader :app_name, :base_url, :api_versions
-      attr_accessor :resources
+      attr_reader :app_name, :base_url
 
       def initialize(app_config)
         @app_name = app_config[:name]
-        @api_versions = app_config[:versions]
         @base_url = app_config[:base_url]
-        @resources = []
+        @app_config = app_config
+      end
+
+      def api_versions
+        @api_versions ||= app_config[:versions].map do |api_version_config|
+          Gutsy::Generator::ApiVersionState.new(api_version_config, self)
+        end
       end
 
       def gem_name
@@ -34,6 +38,10 @@ module Gutsy
       def twine
         binding
       end
+
+      private
+
+      attr_reader :app_config
     end
   end
 end
