@@ -37,7 +37,11 @@ module Gutsy
       end
 
       def copyright_owner
-        @copyright_owner ||= "YOUR_NAME_HERE"
+        @copyright_owner ||= author.name
+      end
+
+      def author
+        @author ||= OpenStruct.new(author_config)
       end
 
       def twine
@@ -47,6 +51,14 @@ module Gutsy
       private
 
       attr_reader :app_config
+
+      def author_config
+        app_config[:author] || {
+          name: "YOUR_NAME_HERE",
+          email: "YOUR_EMAIL_ADDRESS",
+          github: "GITHUB_USER"
+        }
+      end
     end
   end
 end

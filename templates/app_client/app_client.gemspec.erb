@@ -5,8 +5,8 @@ require "./lib/<%= gem_name_snake %>/version"
 Gem::Specification.new do |s|
   s.name        = '<%= gem_name_snake %>'
   s.version     = <%= gem_name_pascal %>::VERSION
-  s.authors     = ["AUTHOR"]
-  s.email       = "author@localhost"
+  s.authors     = ["<%= author.name %>"]
+  s.email       = "<%= author.email %>"
   s.summary     = "Gutsy-generated gem for <%= app_name %> client"
 <% if description -%>
   s.description = <<-DESCRIPTION
