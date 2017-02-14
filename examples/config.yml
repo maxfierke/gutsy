@@ -7,8 +7,7 @@ gutsy:
       FeatureToggles toggles features. This gem provides a wrapper around an HTTP
       Client generated from FeatureToggles's JSON Schema using
       [heroics](https://github.com/interagent/heroics).
+    version: 0.2.0                      # Gem version
     versions:
       - name: v1
-        schema_path: docs/api/v1/schema.json
-      - name: v2016
         schema_path: docs/api/v1/schema.json

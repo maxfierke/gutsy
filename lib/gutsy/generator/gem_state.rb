@@ -28,6 +28,10 @@ module Gutsy
         @gem_name_pascal ||= gem_name.camelize(:upper)
       end
 
+      def gem_version
+        @gem_version ||= app_config[:gem_version] || '0.1.0'
+      end
+
       def copyright_year
         @copyright_year ||= Time.now.year
       end
