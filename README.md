@@ -48,10 +48,12 @@ Gutsy generates RubyGem wrappers and documentation for [heroics](https://github.
 
 ```bash
 $ gem install gutsy
-$ gutsy generate AppName /path/to/schema.json /path/for/output/
+$ gutsy generate /path/to/gutsy/config.yml /path/for/output/
 ```
 
-Check out your generated API gem! You'll probably want to edit the `gemspec`, `README.md`, and `LICENSE.txt` to better fit your needs.
+See [`examples/config.yml`](examples/config.yml) for an example of a Gutsy configuration file.
+
+Check out your generated API gem!
 
 ## License
 
