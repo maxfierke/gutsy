@@ -11,7 +11,7 @@ gutsy:
       name: Iora Health
       email: rubygems@iorahealth.com
       github: IoraHealth
-    version: 0.2.0                      # Gem version
+    gem_version: 0.2.0                      # Gem version
     versions:
       - name: v1
         schema_path: docs/api/v1/schema.json
