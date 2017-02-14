@@ -18,7 +18,7 @@ module Gutsy
 
         build_gem
 
-        puts "Generated client gem(s) can be found in... #{output_path}"
+        puts "Generated client gem can be found in... #{output_path}"
       end
 
       private

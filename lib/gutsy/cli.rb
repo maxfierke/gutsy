@@ -18,13 +18,13 @@ module Gutsy
         puts <<-TEXT
 Error: Not enough arguments for command 'generate'
 
-Usage: gutsy generate [config path] [output_path]
+Usage: gutsy generate [config_path] [output_path]
 
 DESCRIPTION
     Generates a gem scaffold and resource API clients on top of a heroics-generated client.
 
 ARGUMENTS
-    [config path] - Path to gutsy configuration file
+    [config_path] - Path to gutsy configuration file
     [output_path] - Path to output generated API client gem(s).
                     (Will be created if it doesn't exist)
 TEXT
