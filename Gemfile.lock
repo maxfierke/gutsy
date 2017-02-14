@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    gutsy (1.0.0)
+    gutsy (1.0.1)
       activesupport (>= 3.2)
       heroics (~> 0.0.17)
       json_schema (~> 0.13)

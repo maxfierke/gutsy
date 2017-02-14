@@ -1,5 +1,9 @@
 # Gutsy Changelog
 
+## 1.0.1
+
+* Fix missing line breaks in generated README.md
+
 ## 1.0.0
 
 * Support multiple API versions and apps in one configuration file, allow configuring gem metadata. (#1)
