@@ -1,11 +1,12 @@
 module Gutsy
   module Generator
     class GemState
-      attr_reader :app_name, :base_url
+      attr_reader :app_name, :base_url, :description
 
       def initialize(app_config)
         @app_name = app_config[:name]
         @base_url = app_config[:base_url]
+        @description = app_config[:description]
         @app_config = app_config
       end
 

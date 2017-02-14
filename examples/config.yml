@@ -2,7 +2,11 @@
 gutsy:
   feature_toggles:
     name: FeatureToggles
-    base_url: 'http://features.dev'
+    base_url: 'http://features.dev'     # App base URL (no trailing slash)
+    description: |                      # Description, optional
+      FeatureToggles toggles features. This gem provides a wrapper around an HTTP
+      Client generated from FeatureToggles's JSON Schema using
+      [heroics](https://github.com/interagent/heroics).
     versions:
       - name: v1
         schema_path: docs/api/v1/schema.json

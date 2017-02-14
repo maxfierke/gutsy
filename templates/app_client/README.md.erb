@@ -1,7 +1,10 @@
 # <%= app_name %> Ruby Client
 
+<% if description -%>
+<%= description -%>
+<% else -%>
 <%= app_name %> is an application that does things. This gem provides a wrapper around an HTTP Client generated from <%= app_name %>'s JSON Schema using [heroics](https://github.com/interagent/heroics).
-
+<% end -%>
 
 ## Usage
 
