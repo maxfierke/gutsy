@@ -11,7 +11,9 @@
 Add this to your Gemfile
 
 ```
-gem '<%= gem_name_snake %>' #, git: 'git@github.com:USER/REPO.git', tag: 'v0.1.0'
+gem '<%= gem_name_snake %>', git: 'git@github.com:<%= author.github %>/<%= gem_name_snake %>.git', tag: 'v<%= gem_version %>'
+# or, depending on how cool your API is...
+gem '<%= gem_name_snake %>', '~> <%= gem_version %>'
 ```
 
 ### Rails Setup
@@ -21,10 +23,10 @@ gem '<%= gem_name_snake %>' #, git: 'git@github.com:USER/REPO.git', tag: 'v0.1.0
   ```ruby
   <%= gem_name_pascal %>.configure do |config|
     config.base_url   = "<%= base_url %>"
-    config.api_key    = "i-am-api-user"
-    config.api_secret = "very-secret-sssshhh"
+    config.api_key    = "i-am-api-user"         # HTTP Basic Auth User
+    config.api_secret = "very-secret-sssshhh"   # HTTP Basic Auth Pass
     # or OAuth access token
-    # config.access_token = ENV['COOL_API_ACCESS_TOKEN']
+    # config.access_token = ENV['<%= gem_name_snake.upcase %>_ACCESS_TOKEN']
   end
   ```
 
