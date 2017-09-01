@@ -11,6 +11,7 @@ gutsy:
       name: Iora Health
       email: rubygems@iorahealth.com
       github: IoraHealth
+    repo_name: feature_toggles              # (optional) name of the Github repo
     gem_version: 0.2.0                      # Gem version
     versions:
       - name: v1
