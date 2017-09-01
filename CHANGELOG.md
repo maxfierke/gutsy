@@ -1,5 +1,9 @@
 # Gutsy Changelog
 
+## 1.0.2
+
+* Make repo name configurable
+
 ## 1.0.1
 
 * Fix missing line breaks in generated README.md
