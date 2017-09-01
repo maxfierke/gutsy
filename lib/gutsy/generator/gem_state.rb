@@ -32,6 +32,10 @@ module Gutsy
         @gem_version ||= app_config[:gem_version] || '0.1.0'
       end
 
+      def repo_name
+        app_config[:repo_name] || gem_name_snake
+      end
+
       def copyright_year
         @copyright_year ||= Time.now.year
       end
