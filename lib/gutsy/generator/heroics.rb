@@ -27,7 +27,15 @@ module Gutsy
       end
 
       def api_url
-        @api_url ||= "#{api_version_state.base_url}/api/#{api_version_state.name.downcase}"
+        @api_url ||= "#{api_version_state.base_url}/api/#{resource_namespace}#{api_version_state.name.downcase}"
+      end
+
+      def resource_namespace
+        if api_version_state.resource_namespace
+          "#{api_version_state.resource_namespace}/"
+        else
+          ''
+        end
       end
 
       def client_output_path

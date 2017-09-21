@@ -15,4 +15,5 @@ gutsy:
     gem_version: 0.2.0                      # Gem version
     versions:
       - name: v1
+        resource_namespace: features          # (optional) additional URL namespacing
         schema_path: docs/api/v1/schema.json
