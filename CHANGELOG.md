@@ -1,5 +1,9 @@
 # Gutsy Changelog
 
+## 1.0.3
+
+* Adds `resource_namespace` configuration
+
 ## 1.0.2
 
 * Make repo name configurable
