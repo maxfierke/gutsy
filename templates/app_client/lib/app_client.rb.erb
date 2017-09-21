@@ -50,7 +50,7 @@ module <%= gem_name_pascal %>
     end
 
     def api_version=(version)
-      options[:url] = "#{base_url}/api/#{version}"
+      options[:url] = "#{base_url}/api/#{resource_namespace}#{version}"
       @api_version = version
     end
 
@@ -59,8 +59,12 @@ module <%= gem_name_pascal %>
     end
 
     def base_url=(url)
-      options[:url] = "#{url}/api/#{api_version}"
+      options[:url] = "#{url}/api/#{resource_namespace}#{api_version}"
       @base_url = url
+    end
+
+    def resource_namespace
+      '<%= "#{api_versions.first.resource_namespace}/" if api_versions.first.resource_namespace %>'
     end
   end
 end
