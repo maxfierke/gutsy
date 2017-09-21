@@ -23,8 +23,8 @@ gem '<%= gem_name_snake %>', '~> <%= gem_version %>'
   ```ruby
   <%= gem_name_pascal %>.configure do |config|
     config.base_url   = "<%= base_url %>"
-    config.api_key    = "i-am-api-user"         # HTTP Basic Auth User
-    config.api_secret = "very-secret-sssshhh"   # HTTP Basic Auth Pass
+    config.api_key    = "i-am-api-user"
+    config.api_secret = "very-secret-sssshhh"
     # or OAuth access token
     # config.access_token = ENV['<%= gem_name_snake.upcase %>_ACCESS_TOKEN']
   end

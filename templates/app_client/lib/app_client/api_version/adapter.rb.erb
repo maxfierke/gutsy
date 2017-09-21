@@ -28,7 +28,10 @@ module <%= gem_name_pascal %>
             config.adapter_factory.connect_oauth(access_token, options)
           elsif api_key && api_secret
             config.adapter_factory.connect(api_secret, options.merge!({
-              user: config.api_key
+              default_headers: {
+                'X-API-KEY' => config.api_key,
+                'X-API-SECRET' => config.api_secret,
+              }
             }))
           else
             raise "access_token or API key & secret are required to connect to <%= app_name %> <%= module_name %> API"
