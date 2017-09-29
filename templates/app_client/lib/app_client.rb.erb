@@ -46,7 +46,7 @@ module <%= gem_name_pascal %>
     end
 
     def api_version
-      @api_version ||= '<%= api_versions.first.name %>'
+      @api_version = options[:api_version] || '<%= api_versions.first.name %>'
     end
 
     def api_version=(version)
@@ -55,7 +55,8 @@ module <%= gem_name_pascal %>
     end
 
     def adapter_factory
-      @adapter_factory ||= <%= gem_name_pascal %>.const_get("#{api_version.upcase}")::Adapters::Http
+      version = options[:api_version] ? options[:api_version] : api_version
+      @adapter_factory = <%= gem_name_pascal %>.const_get("#{version.upcase}")::Adapters::Http
     end
 
     def base_url=(url)
@@ -64,7 +65,9 @@ module <%= gem_name_pascal %>
     end
 
     def resource_namespace
-      '<%= "#{api_versions.first.resource_namespace}/" if api_versions.first.resource_namespace %>'
+<% if api_versions.first.resource_namespace -%>
+     options[:resource_namespace] || '<%= "#{api_versions.first.resource_namespace}/" %>'
+<% end -%>
     end
   end
 end
