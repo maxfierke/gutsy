@@ -39,35 +39,41 @@ module <%= gem_name_pascal %>
   class Configuration
     attr_accessor :access_token, :api_key, :api_secret,
                   :base_url, :options,
-                  :adapter_factory, :api_version
+                  :adapter_factory, :api_version, :api_version_name
 
     def options
       @options ||= {}
     end
 
     def api_version
-      @api_version = options[:api_version] || '<%= api_versions.first.name %>'
+      @api_version = if options[:api_version_name] && options[:resource_namespace]
+        OpenStruct.new(name: options[:api_version_name], resource_namespace: options[:resource_namespace])
+      else
+<% if api_versions.first -%>
+        OpenStruct.new(name: '<%= "#{api_versions.first.name}" -%>', resource_namespace: '<%= "#{api_versions.first.resource_namespace}" -%>')
+<% else -%>
+        OpenStruct.new(name: '', resource_namespace: '')
+<% end -%>
+      end
     end
 
-    def api_version=(version)
-      options[:url] = "#{base_url}/api/#{resource_namespace}#{version}"
-      @api_version = version
+    def api_version_name=(name)
+      options[:url]     = "#{base_url}/api/#{resource_namespace}#{name}"
+      @api_version_name = name
+      @api_version.name = name
     end
 
     def adapter_factory
-      version = options[:api_version] ? options[:api_version] : api_version
-      @adapter_factory = <%= gem_name_pascal %>.const_get("#{version.upcase}")::Adapters::Http
+      @adapter_factory = <%= gem_name_pascal %>.const_get("#{api_version.name.upcase}")::Adapters::Http
     end
 
     def base_url=(url)
-      options[:url] = "#{url}/api/#{resource_namespace}#{api_version}"
-      @base_url = url
+      options[:url] = "#{url}/api/#{resource_namespace}#{api_version.name}"
+      @base_url     = url
     end
 
     def resource_namespace
-<% if api_versions.first.resource_namespace -%>
-     options[:resource_namespace] || '<%= "#{api_versions.first.resource_namespace}/" %>'
-<% end -%>
+      api_version.resource_namespace
     end
   end
 end
