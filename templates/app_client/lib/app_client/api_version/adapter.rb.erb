@@ -18,7 +18,9 @@ module <%= gem_name_pascal %>
           access_token  ||= config.access_token
           api_key       ||= config.api_key
           api_secret    ||= config.api_secret
-          options         = config.options.merge!(options)
+
+          config.options.except!(:api_version, :resource_namespace)
+          options = config.options.merge!(options)
 
           # Workaround issue with some TLS setups (haproxy)
           # Prevents :443 being added to hostname for TLS
