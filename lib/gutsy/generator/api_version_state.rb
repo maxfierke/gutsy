@@ -3,14 +3,14 @@ module Gutsy
     class ApiVersionState
       extend Forwardable
 
-      attr_reader :name, :schema, :schema_path, :resource_url
+      attr_reader :name, :schema, :schema_path, :namespace_path
 
       def_delegators :gem_state, :gem_name_pascal, :gem_name_snake, :app_name, :base_url
 
       def initialize(api_version_config, gem_state)
         @name = api_version_config[:name]
         @schema_path = api_version_config[:schema_path]
-        @resource_url = api_version_config[:resource_url] || "api/#{@name.downcase}"
+        @namespace_path = api_version_config[:namespace_path] || "api/#{@name.downcase}"
         @gem_state = gem_state
       end
 

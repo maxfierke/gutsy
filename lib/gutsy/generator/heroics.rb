@@ -27,7 +27,7 @@ module Gutsy
       end
 
       def api_url
-        @api_url ||= "#{api_version_state.base_url}/#{api_version_state.resource_url}"
+        @api_url ||= "#{api_version_state.base_url}/#{api_version_state.namespace_path}"
       end
 
       def client_output_path

@@ -15,5 +15,5 @@ gutsy:
     gem_version: 0.2.0                      # Gem version
     versions:
       - name: v1
-        resource_url: api/features/v1       # (optional) for additional URL namespacing
+        namespace_path: api/features/v1     # (optional) for additional URL namespacing. Would default to `api/v1` in this example
         schema_path: docs/api/v1/schema.json
