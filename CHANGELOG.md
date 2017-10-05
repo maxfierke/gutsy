@@ -1,5 +1,10 @@
 # Gutsy Changelog
 
+## 1.1.0
+
+* Supports multiple API versions. `namespace_path` configuration replaced the
+  short-lived `resource_namespace` config
+
 ## 1.0.3
 
 * Adds `resource_namespace` configuration
